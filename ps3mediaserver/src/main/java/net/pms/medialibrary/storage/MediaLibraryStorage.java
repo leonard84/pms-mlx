@@ -469,13 +469,59 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	}
 
 	@Override
-	public void deleteFileInfoByFilePath(String filePath) {
+	public void updateFileInfoPath(String oldFilePath, String filePath) {
 		try {
-			dbFileInfo.deleteFileInfoByFilePath(filePath);
-			if(log.isInfoEnabled()) log.info(String.format("Deleted file %s from library", filePath));
+			dbFileInfo.updateFileInfoPath(oldFilePath, filePath);
+		} catch (StorageException e) {
+			log.error("Storage error (update)", e);
+		}
+	}
+
+	@Override
+	public void deleteFileInfo(String filePath) {
+		try {
+			DOFileInfo ff = getFileInfo(filePath);
+			String msg = null;
+			if(ff != null) {
+				switch(ff.getType()) {
+				case AUDIO:
+					//TODO: implement
+					break;
+				case PICTURES:
+					//TODO: implement
+					break;
+				case VIDEO:
+					deleteVideoFileInfo(ff.getId());
+					break;
+				}
+				msg = String.format("Deleted file '%s' of type %s from library", filePath, ff.getType());
+				
+				// notify of the delete in the GUI
+				PMS.get().getFrame().setStatusLine(Messages.getString("ML.Messages.VideoDeleted") + " " + filePath);
+			} else {
+				msg = "No file info could be found for deletetion for file=" + filePath;
+			}
+			if(log.isInfoEnabled()) log.info(msg);			
 		} catch (StorageException e) {
 			log.error("Storage error (delete)", e);
 		}
+	}
+
+	private DOFileInfo getFileInfo(String filePath) throws StorageException {
+		FileType fileType = dbFileInfo.getFileType(filePath);
+		DOFileInfo res = null;
+		switch(fileType) {
+		case AUDIO:
+			//TODO: implement
+			break;
+		case PICTURES:
+			//TODO: implement
+			break;
+		case VIDEO:
+			res = dbVideoFileInfo.getFileInfo(filePath);
+			break;
+		}
+		return res;
 	}
 
 	@Override
@@ -544,9 +590,9 @@ public class MediaLibraryStorage implements IMediaLibraryStorage {
 	}
 	
 	@Override
-	public void deleteVideo(long fileId) {
+	public void deleteVideoFileInfo(long fileId) {
 		try {
-			dbVideoFileInfo.deleteVideo(fileId);
+			dbVideoFileInfo.delete(fileId);
 			if(log.isInfoEnabled()) log.info(String.format("Deleted video with id=%s", fileId));
 		} catch (StorageException e) {
 			log.error("Storage error (delete)", e);

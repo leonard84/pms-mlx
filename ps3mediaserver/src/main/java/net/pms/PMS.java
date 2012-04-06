@@ -46,8 +46,10 @@ import net.pms.configuration.RendererConfiguration;
 import net.pms.dlna.DLNAMediaDatabase;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.dlna.RootFolder;
+import net.pms.medialibrary.library.LibraryManager;
 import net.pms.medialibrary.scanner.FullDataCollector;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.medialibrary.watch.FolderWatcher;
 import net.pms.dlna.virtual.MediaLibrary;
 import net.pms.encoders.Player;
 import net.pms.encoders.PlayerFactory;
@@ -565,6 +567,10 @@ public class PMS {
 	        net.pms.medialibrary.external.ExternalFactory.lookup();
         } catch (Exception e) {
 	        logger.error("Failed to load media library plugins", e);
+        }
+		
+		if(MediaLibraryConfiguration.getInstance().isMediaLibraryEnabled()) {
+			FolderWatcher.getInstance().setWatchFolders(MediaLibraryStorage.getInstance().getManagedFolders());
         }
 		
 		//delete thumbnails for every session

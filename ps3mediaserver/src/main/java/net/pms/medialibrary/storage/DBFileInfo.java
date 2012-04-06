@@ -148,8 +148,8 @@ class DBFileInfo extends DBBase {
 		ResultSet rs = null;
 		
 		int pos = filePath.lastIndexOf(File.separatorChar) + 1;
-		String fileName = filePath.substring(0, pos);
-		String folderPath = filePath.substring(pos);
+		String folderPath = filePath.substring(0, pos);
+		String fileName = filePath.substring(pos);
 
 		try {
 			conn = cp.getConnection();
@@ -239,6 +239,35 @@ class DBFileInfo extends DBBase {
 			insertOrUpdateTags(fileInfo.getId(), fileInfo.getTags(), stmt, conn);
 		} catch (Exception e) {
 			throw new StorageException("Failed to insert fileinfo for file" + fileInfo.getFilePath(), e);
+		} finally {
+			close(conn, stmt, rs);
+		}
+	}
+
+	protected void updateFileInfoPath(String oldFilePath, String filePath) throws StorageException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		int sep = oldFilePath.lastIndexOf(java.io.File.separator) + 1;		
+		String oldFolderPath = oldFilePath.substring(0, sep);
+		String oldFileName = oldFilePath.substring(sep);
+		
+		sep = filePath.lastIndexOf(java.io.File.separator) + 1;		
+		String folderPath = filePath.substring(0, sep);
+		String fileName = filePath.substring(sep);
+
+		try {
+			conn = cp.getConnection();
+			stmt = conn.prepareStatement("UPDATE FILE SET FOLDERPATH = ?, FILENAME = ?"
+		    		        + " WHERE FOLDERPATH = ? AND FILENAME = ?");
+			stmt.setString(1, folderPath);
+			stmt.setString(2, fileName);
+			stmt.setString(3, oldFolderPath);
+			stmt.setString(4, oldFileName);
+			stmt.executeUpdate();
+		} catch (Exception e) {
+			throw new StorageException(String.format("Failed to update path of file from %s to %s", oldFilePath, filePath), e);
 		} finally {
 			close(conn, stmt, rs);
 		}
@@ -467,7 +496,7 @@ class DBFileInfo extends DBBase {
 		//increment the play count for the file
 		try {
 			conn = cp.getConnection();
-			stmt = conn.prepareStatement("SELECT ID FROM FILE FILE WHERE FILENAME = ? AND FOLDERPATH = ?");
+			stmt = conn.prepareStatement("SELECT ID FROM FILE WHERE FILENAME = ? AND FOLDERPATH = ?");
 			stmt.setString(1, fileName);
 			stmt.setString(2, folderPath);
 			rs = stmt.executeQuery();
@@ -482,6 +511,35 @@ class DBFileInfo extends DBBase {
 		
 		return retVal;
     }
+
+	FileType getFileType(String filePath) throws StorageException {
+		FileType retVal = FileType.UNKNOWN;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		String fileName = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1);
+		String folderPath = filePath.substring(0, filePath.lastIndexOf(File.separatorChar) + 1);
+		
+		//increment the play count for the file
+		try {
+			conn = cp.getConnection();
+			stmt = conn.prepareStatement("SELECT TYPE FROM FILE WHERE FILENAME = ? AND FOLDERPATH = ?");
+			stmt.setString(1, fileName);
+			stmt.setString(2, folderPath);
+			rs = stmt.executeQuery();
+			if(rs.next()){
+				retVal = FileType.valueOf(FileType.class, rs.getString(1));
+			}
+		} catch (SQLException ex) {
+			throw new StorageException("Failed to get ID for for file path=" + filePath, ex);
+		} finally {
+			close(conn, stmt, rs);
+		}
+		
+		return retVal;
+	}
 	
 	/*********************************************
 	 * 

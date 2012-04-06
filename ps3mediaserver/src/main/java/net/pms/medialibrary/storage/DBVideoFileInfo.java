@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -18,11 +19,16 @@ import net.pms.dlna.DLNAMediaAudio;
 import net.pms.dlna.DLNAMediaSubtitle;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
 import net.pms.medialibrary.commons.dataobjects.DOCertification;
+import net.pms.medialibrary.commons.dataobjects.DOCondition;
+import net.pms.medialibrary.commons.dataobjects.DOFileInfo;
 import net.pms.medialibrary.commons.dataobjects.DOFilter;
 import net.pms.medialibrary.commons.dataobjects.DORating;
 import net.pms.medialibrary.commons.dataobjects.DOVideoFileInfo;
 import net.pms.medialibrary.commons.dataobjects.OmitPrefixesConfiguration;
+import net.pms.medialibrary.commons.enumarations.ConditionOperator;
 import net.pms.medialibrary.commons.enumarations.ConditionType;
+import net.pms.medialibrary.commons.enumarations.ConditionUnit;
+import net.pms.medialibrary.commons.enumarations.ConditionValueType;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.enumarations.SortOption;
 import net.pms.medialibrary.commons.exceptions.StorageException;
@@ -126,7 +132,7 @@ class DBVideoFileInfo extends DBFileInfo {
         return res;
 	}
 
-	void deleteVideo(long fileId) throws StorageException {
+	void delete(long fileId) throws StorageException {
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		
@@ -138,6 +144,25 @@ class DBVideoFileInfo extends DBFileInfo {
 		} finally {
 			close(conn, stmt);
         }
+	}
+
+	DOFileInfo getFileInfo(String filePath) throws StorageException {
+		String fileName = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1);
+		String folderPath = filePath.substring(0, filePath.lastIndexOf(File.separatorChar) + 1);
+		
+		DOFilter filter = new DOFilter();
+		filter.setEquation("c1 AND c2");
+		DOCondition c1 = new DOCondition(ConditionType.FILE_FILENAME, ConditionOperator.IS, fileName, "c1", ConditionValueType.STRING, ConditionUnit.UNKNOWN, null);
+		DOCondition c2 = new DOCondition(ConditionType.FILE_FOLDERPATH, ConditionOperator.IS, folderPath, "c2", ConditionValueType.STRING, ConditionUnit.UNKNOWN, null);
+		filter.setConditions(Arrays.asList(c1, c2));
+		
+		List<DOVideoFileInfo> results = getVideoFileInfo(filter, true, ConditionType.FILE_FILENAME, SortOption.FileProperty, 1, false);
+		DOFileInfo res = null;
+		if(results.size() == 1) {
+			res = results.get(0);
+		}
+		
+		return res;
 	}
 	
 	List<DOVideoFileInfo> getVideoFileInfo(DOFilter filter, boolean sortAscending, final ConditionType sortField, SortOption sortOption, int maxResults, boolean onlyActive) throws StorageException {

@@ -45,11 +45,12 @@ public interface IMediaLibraryStorage {
 	void deleteAllFileInfo();	
 	void insertFileInfo(DOFileInfo fileInfo);
 	void updateFileInfo(DOFileInfo fileInfo);
-	void deleteFileInfoByFilePath(String filePath);
+	void deleteFileInfo(String filePath);
 	Date getFileInfoLastUpdated(String fileName);
 	long getRootFolderId();
 	void updatePlayCount(long fileId, int playTimeSec, Date datePlayEnd);
 	void updatePlayCount(String filePath, int playTimeSec, Date datePlayEnd);
+	void updateFileInfoPath(String oldFilePath, String filePath);
 	List<DOFileInfo> getFileInfo(DOFilter filter, boolean sortAscending, ConditionType sortField, int maxResults, SortOption sortOption);
 	List<String> getExistingTags(FileType fileType);
 	List<String> getTagValues(String tagName, boolean isAscending, int minOccurences);
@@ -60,7 +61,7 @@ public interface IMediaLibraryStorage {
 	List<String> getVideoProperties(ConditionType conditionType, boolean isAscending, int minOccurences);
 	int getFilteredVideoCount(DOFilter filter);
 	int getVideoCount();	
-	void deleteVideo(long fileId);
+	void deleteVideoFileInfo(long fileId);
 	
 	//AudioFileInfo
 	void deleteAudioFileInfo();

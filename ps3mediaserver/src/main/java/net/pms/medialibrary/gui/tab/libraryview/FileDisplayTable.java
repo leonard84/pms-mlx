@@ -769,7 +769,7 @@ public class FileDisplayTable extends JPanel {
 					}
 				}
 				
-				MediaLibraryStorage.getInstance().deleteVideo(fileInfo.getId());
+				MediaLibraryStorage.getInstance().deleteVideoFileInfo(fileInfo.getId());
 				selectionInList.getList().remove(fileInfo);
 			}					
 		}

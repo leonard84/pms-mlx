@@ -10,6 +10,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import net.pms.Messages;
 import net.pms.medialibrary.commons.MediaLibraryConfiguration;
+import net.pms.medialibrary.commons.dataobjects.DOManagedFile;
 import net.pms.medialibrary.commons.dataobjects.OmitPrefixesConfiguration;
 import net.pms.medialibrary.commons.enumarations.FileType;
 import net.pms.medialibrary.commons.enumarations.MediaLibraryConstants.MetaDataKeys;
@@ -41,6 +43,7 @@ import net.pms.medialibrary.gui.dialogs.ScanFolderDialog;
 import net.pms.medialibrary.library.LibraryManager;
 import net.pms.medialibrary.scanner.FileScanner;
 import net.pms.medialibrary.storage.MediaLibraryStorage;
+import net.pms.medialibrary.watch.FolderWatcher;
 import net.sf.jtmdb.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -177,7 +180,9 @@ public class GeneralOptionsView extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pManagedFolders.cleanManagedFolders();
-				MediaLibraryStorage.getInstance().setManagedFolders(pManagedFolders.getManagedFolders());
+				List<DOManagedFile> managedFolders = pManagedFolders.getManagedFolders();
+				MediaLibraryStorage.getInstance().setManagedFolders(managedFolders);
+				FolderWatcher.getInstance().setWatchFolders(managedFolders);
 
 				libConfig.setPictureSaveFolderPath(tfPictureFolderPathValue.getText());
 
