@@ -34,7 +34,7 @@
 
 		<!-- Include executable script -->
 		<fileSet>
-			<directory>${project.core.external-resources}</directory>
+			<directory>${project.external-resources}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0755</fileMode>
 			<lineEnding>unix</lineEnding>
@@ -68,7 +68,7 @@
 
 		<!-- Include configuration files -->
 		<fileSet>
-			<directory>${project.core.external-resources}</directory>
+			<directory>${project.external-resources}</directory>
 			<outputDirectory>.</outputDirectory>
 			<fileMode>0644</fileMode>
 			<lineEnding>unix</lineEnding>

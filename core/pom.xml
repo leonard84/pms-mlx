@@ -116,7 +116,7 @@
 		<mediautil-version>1.0</mediautil-version>
 		<slf4j-version>1.6.4</slf4j-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.external-resources>${project.basedir}/src/main/external-resources</project.external-resources>
+		<project.external-resources>../external-resources</project.external-resources>
 		<project.binaries>${project.basedir}/target/bin</project.binaries>
 
 		<!-- Snapshots should get their binaries from the trunk, releases from 
@@ -124,7 +124,7 @@
 		<project.binaries-base>http://ps3mediaserver.googlecode.com/svn/trunk/ps3mediaserver</project.binaries-base>
 		<!-- <project.binaries-base>http://ps3mediaserver.googlecode.com/svn/tags/1.40.0</project.binaries-base> -->
 
-		<maven.nsis.project.template>${project.basedir}/src/main/external-resources/nsis/project.jelly</maven.nsis.project.template>
+		<maven.nsis.project.template>${project.external-resources}/nsis/project.jelly</maven.nsis.project.template>
 	</properties>
 
 	<repositories>
@@ -451,7 +451,7 @@
 
 			<!-- Copy and filter the NSIS header file to replace Maven properties -->
 			<resource>
-				<directory>src/main/external-resources/nsis</directory>
+				<directory>${project.external-resources}/nsis</directory>
 				<includes>
 					<include>extra.nsh</include>
 				</includes>
@@ -625,7 +625,7 @@
 			<!-- 
 				This plugin will take care of installing the external dependencies that do
 				not exist in a public Maven repository. That is why we store some jar files
-				in the "src/main/external-resources/lib" directory and have this plugin
+				in the "../external-resources/lib" directory and have this plugin
 				take care of the installation at build time.
 				
 				Note: The plugin does not work automatically in Maven 3. To install the

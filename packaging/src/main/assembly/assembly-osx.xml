@@ -62,7 +62,7 @@
 
 		<!-- Include JavaApplicationStub.setenv -->
 		<fileSet>
-			<directory>${project.core.external-resources}/osx</directory>
+			<directory>${project.external-resources}/osx</directory>
 			<outputDirectory>${project.core.name}.app/Contents/MacOS</outputDirectory>
 			<fileMode>0755</fileMode>
 			<includes>
@@ -72,7 +72,7 @@
 
 		<!-- Include fontconfig files -->
 		<fileSet>
-			<directory>${project.core.external-resources}/osx/fonts</directory>
+			<directory>${project.external-resources}/osx/fonts</directory>
 			<outputDirectory>${project.core.name}.app/Contents/Resources/Java/fonts</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
@@ -82,7 +82,7 @@
 
 		<!-- Include configuration files -->
 		<fileSet>
-			<directory>${project.core.external-resources}</directory>
+			<directory>${project.external-resources}</directory>
 			<outputDirectory>${project.core.name}.app/Contents/Resources/Java</outputDirectory>
 			<fileMode>0644</fileMode>
 			<includes>
